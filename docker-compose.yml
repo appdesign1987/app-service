@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  app-service:
+    image: registry.siqwell.pro/root/app-service:latest
+    container_name: app-service
+    restart: on-failure
+    ports:
+      - 80:8080
