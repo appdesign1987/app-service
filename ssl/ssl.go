@@ -19,9 +19,9 @@ func DomainRouterHandler(w http.ResponseWriter, r *http.Request) {
 
 	ips, err := net.LookupIP(Host)
 
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not get IPs: %v\n", err)
-		os.Exit(1)
+	if err != nil || len(ips) == 0 {
+		Output.SendResponse(w, Output.Error{Code: http.StatusInternalServerError, Message: "Could not get IPs"})
+		return
 	}
 
 	Certs := make([]Output.Cert, 0)
@@ -32,7 +32,10 @@ func DomainRouterHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		dialer := net.Dialer{Timeout: 10 * time.Second, Deadline: time.Now().Add(10*time.Second + 5*time.Second)}
-		connection, err := tls.DialWithDialer(&dialer, "tcp", fmt.Sprintf("[%s]:443", ip), &tls.Config{ServerName: Host})
+
+		connection, err := tls.DialWithDialer(&dialer, "tcp", fmt.Sprintf("[%s]:443", ip), &tls.Config{
+			ServerName: Host,
+		})
 
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%s: %s", ip, err)
@@ -72,10 +75,14 @@ func DomainRouterHandler(w http.ResponseWriter, r *http.Request) {
 		connection.Close()
 	}
 
-	LeftDays := 100000;
-	for _, crt := range Certs {
-		if LeftDays >= 0 && crt.LeftDays < LeftDays {
-			LeftDays = crt.LeftDays
+	LeftDays := 0
+
+	if len(Certs) > 0 {
+		LeftDays = 100000;
+		for _, crt := range Certs {
+			if LeftDays >= 0 && crt.LeftDays < LeftDays {
+				LeftDays = crt.LeftDays
+			}
 		}
 	}
 

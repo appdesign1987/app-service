@@ -6,4 +6,4 @@ services:
     container_name: app-service
     restart: on-failure
     ports:
-      - 80:8080
+      - 8080:8080
