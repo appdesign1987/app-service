@@ -2,6 +2,7 @@ package main
 
 import (
 	"./rkn"
+	"./ssl"
 	"./whois"
 	"fmt"
 	Mux "github.com/gorilla/mux"
@@ -26,6 +27,7 @@ func main() {
 
 	Router := Mux.NewRouter()
 
+	Router.HandleFunc("/ssl/{host}", ssl.DomainRouterHandler).Methods("GET")
 	Router.HandleFunc("/whois/{domain}", whois.DomainRouterHandler).Methods("GET")
 
 	Router.HandleFunc("/rkn/ip/{ip}/short", rkn.IpShortRouterHandler).Methods("GET")
