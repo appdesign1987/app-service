@@ -7,7 +7,6 @@ import (
 	Mux "github.com/gorilla/mux"
 	"net"
 	"fmt"
-	"os"
 	"time"
 	"crypto/tls"
 	"math"
@@ -38,8 +37,8 @@ func DomainRouterHandler(w http.ResponseWriter, r *http.Request) {
 		})
 
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "%s: %s", ip, err)
-			continue
+			Output.SendResponse(w, Output.Error{Code: http.StatusInternalServerError, Message: fmt.Sprintf("%s (%s)", err, ip)})
+			return
 		}
 
 		// rembember the checked certs based on their Signature
