@@ -20,11 +20,11 @@ func DomainRouterHandler(w http.ResponseWriter, r *http.Request) {
 	RequestParams := Mux.Vars(r)
 	DomainName := strings.ToLower(RequestParams["domain"])
 
-	if _d, found := Store.Get(DomainName); found {
-		Data := _d.(Output.DomainData)
-		Output.SendResponse(w, Output.WhoisSuccess{Code: http.StatusOK, Data: Data})
-		return
-	}
+	//if _d, found := Store.Get(DomainName); found {
+	//	Data := _d.(Output.DomainData)
+	//	Output.SendResponse(w, Output.WhoisSuccess{Code: http.StatusOK, Data: Data})
+	//	return
+	//}
 
 	RawWhois, err := Whois.GetWhois(DomainName)
 
@@ -61,12 +61,13 @@ func DomainRouterHandler(w http.ResponseWriter, r *http.Request) {
 
 	Data := Output.DomainData{
 		DomainName:     DomainName,
+		NameServers:    strings.Split(ParsedWhois.Registrar.NameServers, ","),
 		CreatedDate:    fmt.Sprintf("%d-%02d-%02d", _c.Year(), _c.Month(), _c.Day()),
 		ExpirationDate: fmt.Sprintf("%d-%02d-%02d", _e.Year(), _e.Month(), _e.Day()),
 		ExpireLeftDays: math.Round(_e.Sub(time.Now()).Hours() / 24),
 	}
 
-	Store.SetDefault(DomainName, Data)
+	// Store.SetDefault(DomainName, Data)
 
 	Output.SendResponse(w, Output.WhoisSuccess{Code: http.StatusOK, Data: Data})
 }

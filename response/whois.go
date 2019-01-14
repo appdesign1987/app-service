@@ -3,10 +3,11 @@ package response
 import "encoding/json"
 
 type DomainData struct {
-	DomainName     string  `json:"domain_name"`
-	CreatedDate    string  `json:"created_date"`
-	ExpirationDate string  `json:"expiration_date"`
-	ExpireLeftDays float64 `json:"expire_left_days"`
+	DomainName     string   `json:"domain_name"`
+	CreatedDate    string   `json:"created_date"`
+	ExpirationDate string   `json:"expiration_date"`
+	ExpireLeftDays float64  `json:"expire_left_days"`
+	NameServers    []string `json:"name_servers"`
 }
 
 // WhoisSuccess
