@@ -40,19 +40,26 @@ func DomainRouterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if ParsedWhois.Registrar.DomainName == "" {
+	if ParsedWhois.Domain.Name == "" {
 		Output.SendResponse(w, Output.Error{Code: http.StatusInternalServerError, Message: "Unregistered Domain Name"})
 		return
 	}
 
-	_c, err := DateParse.ParseLocal(ParsedWhois.Registrar.CreatedDate)
+	_c, err := DateParse.ParseLocal(ParsedWhois.Domain.CreatedDate)
 
 	if err != nil {
 		Output.SendResponse(w, Output.Error{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 
-	_e, err := DateParse.ParseLocal(ParsedWhois.Registrar.ExpirationDate)
+	_u, err := DateParse.ParseLocal(ParsedWhois.Domain.UpdatedDate)
+
+	if err != nil {
+		Output.SendResponse(w, Output.Error{Code: http.StatusInternalServerError, Message: err.Error()})
+		return
+	}
+
+	_e, err := DateParse.ParseLocal(ParsedWhois.Domain.ExpirationDate)
 
 	if err != nil {
 		Output.SendResponse(w, Output.Error{Code: http.StatusInternalServerError, Message: err.Error()})
@@ -61,10 +68,17 @@ func DomainRouterHandler(w http.ResponseWriter, r *http.Request) {
 
 	Data := Output.DomainData{
 		DomainName:     DomainName,
-		NameServers:    strings.Split(ParsedWhois.Registrar.NameServers, ","),
+		Status:         ParsedWhois.Domain.Status,
+		WhoisServer:    ParsedWhois.Domain.WhoisServer,
+		DnsSEC:         ParsedWhois.Domain.DNSSEC,
+		NameServers:    strings.Split(ParsedWhois.Domain.NameServers, ","),
 		CreatedDate:    fmt.Sprintf("%d-%02d-%02d", _c.Year(), _c.Month(), _c.Day()),
+		UpdatedDate:    fmt.Sprintf("%d-%02d-%02d", _u.Year(), _u.Month(), _u.Day()),
 		ExpirationDate: fmt.Sprintf("%d-%02d-%02d", _e.Year(), _e.Month(), _e.Day()),
 		ExpireLeftDays: math.Round(_e.Sub(time.Now()).Hours() / 24),
+		Registrar: Output.Registrar{
+			Name: ParsedWhois.Registrar.Name,
+		},
 	}
 
 	// Store.SetDefault(DomainName, Data)

@@ -64,7 +64,7 @@ func DbLoadDump(path string) (*iptree.IPTree, error) {
 
 	scanner := bufio.NewScanner(file)
 	buf := make([]byte, 0, 64*1024)
-	scanner.Buffer(buf, 1024*1024)
+	scanner.Buffer(buf, 8*1024*1024)
 
 	t := iptree.New()
 	t.AddByString("0.0.0.0/0", 0)
