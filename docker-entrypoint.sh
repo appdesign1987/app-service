@@ -1,8 +1,3 @@
-#!/bin/bash
-set -e
-
-if [ $# -eq 0 ]; then
-    /usr/bin/app-service
-else
-    exec "$@"
-fi
+#!/usr/bin/env bash
+export LISTEN_PORT=8080
+go get -v -d && go run main.go
