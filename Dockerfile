@@ -2,11 +2,18 @@ FROM alpine:latest
 MAINTAINER "NEO Dev <everestmx@gmail.com>"
 
 # Install dependencies
-RUN apk add --update git --no-cache
+RUN apk add --update git --no-cache make musl-dev go
 
 COPY . /app
 
 WORKDIR /app
+
+# Configure Go
+ENV GOROOT /usr/lib/go
+ENV GOPATH /go
+ENV PATH /go/bin:$PATH
+
+RUN mkdir -p ${GOPATH}/src ${GOPATH}/bin
 
 #RUN go get -v -d && CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app-service
 
