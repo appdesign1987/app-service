@@ -2,7 +2,7 @@ FROM alpine:latest
 MAINTAINER "NEO Dev <everestmx@gmail.com>"
 
 # Install dependencies
-RUN apk add --update git --no-cache make musl-dev go
+RUN apk add --update git --no-cache make musl-dev go bash curl
 
 COPY . /app
 
@@ -15,18 +15,13 @@ ENV PATH /go/bin:$PATH
 
 RUN mkdir -p ${GOPATH}/src ${GOPATH}/bin
 
-#RUN go get -v -d && CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app-service
+RUN go get -u github.com/Masterminds/glide/
 
-#
-# This results in a single layer image
-#
-# Install dependencies
-RUN apk add --update ca-certificates bash curl --no-cache
+WORKDIR $GOPATH
+
+CMD ["make"]
 
 ADD docker-entrypoint.sh /docker-entrypoint.sh
-
-# Copy squid-auth from `golang`
-#COPY --from=build /app/app-service /usr/bin/app-service
 
 # Fix executable
 RUN chmod +x /docker-entrypoint.sh
