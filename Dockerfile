@@ -6,8 +6,6 @@ RUN apk add --update git --no-cache make musl-dev go bash curl
 
 COPY . /app
 
-WORKDIR /app
-
 # Configure Go
 ENV GOROOT /usr/lib/go
 ENV GOPATH /go
@@ -20,6 +18,8 @@ RUN go get -u github.com/Masterminds/glide/
 WORKDIR $GOPATH
 
 CMD ["make"]
+
+WORKDIR /app
 
 ADD docker-entrypoint.sh /docker-entrypoint.sh
 
