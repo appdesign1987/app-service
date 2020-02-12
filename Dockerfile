@@ -19,6 +19,7 @@ WORKDIR $GOPATH
 
 CMD ["make"]
 
+#back to app
 WORKDIR /app
 
 ADD docker-entrypoint.sh /docker-entrypoint.sh
